@@ -30,7 +30,7 @@ public class User {
         this.password = password;
     }
 
-    public Boolean isValid() {
+    public Boolean getValid() {
         return isValid;
     }
 
