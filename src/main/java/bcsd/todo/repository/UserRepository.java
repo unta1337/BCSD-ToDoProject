@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+// TODO: 사용자 아이디 및 비밀번호 유요성 판단 로직 추가.
+
 /**
  * 사용자 리포지토리 클래스.
  */
@@ -16,7 +18,7 @@ public interface UserRepository {
      *
      * @param id 사용자 아이디
      * @param password 사용자 비밀번호
-     * @return 사용자 계정 생성 여부 (0: 실패, 1: 성공)
+     * @return 사용자 계정 생성 여부
      */
     Integer createUser(@Param("id") String id, @Param("password") String password);
 
@@ -57,4 +59,13 @@ public interface UserRepository {
      * @param idUniq 사용자 고유 번호
      */
     Integer restoreUserByIdUniq(@Param("id_uniq") Integer idUniq);
+
+    /**
+     * 사용자 비밀번호 변경하기.
+     *
+     * @param idUniq 사용자 고유 번호
+     * @param password 사용자 비밀번호
+     * @return 비밀번호 변경 여부
+     */
+    Integer updatePasswordByIdUniq(@Param("id_uniq") Integer idUniq, @Param("password") String password);
 }

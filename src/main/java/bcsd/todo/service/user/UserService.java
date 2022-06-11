@@ -38,6 +38,15 @@ public interface UserService {
     List<User> getUserById(String id);
 
     /**
+     * 사용자 비밀번호 변경하기.
+     *
+     * @param idUniq 사용자 고유 번호
+     * @param password 사용자 비밀번호
+     * @return 비밀번호 변경 여부
+     */
+    Boolean updatePasswordByIdUniq(Integer idUniq, String password);
+
+    /**
      * 사용자 계정 삭제하기.
      *
      * @param idUniq 사용자 고유 번호

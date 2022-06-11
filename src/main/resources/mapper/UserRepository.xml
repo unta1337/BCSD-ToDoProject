@@ -31,4 +31,8 @@
     <update id="restoreUserByIdUniq">
         update user set is_valid = 1 where id_uniq = #{id_uniq}
     </update>
+
+    <update id="updatePasswordByIdUniq">
+        update user set password = #{password} where id_uniq = #{id_uniq}
+    </update>
 </mapper>

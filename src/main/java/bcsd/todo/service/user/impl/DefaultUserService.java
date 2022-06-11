@@ -74,6 +74,31 @@ public class DefaultUserService implements UserService {
     }
 
     /**
+     * 사용자 비밀번호 변경하기.
+     * TODO: JWT 사용자 인증 및 인가 추가.
+     *
+     * @param idUniq 사용자 고유 번호
+     * @param password 사용자 비밀번호
+     * @return 비밀번호 변경 여부
+     */
+    @Override
+    public Boolean updatePasswordByIdUniq(Integer idUniq, String password) {
+        User target = getUserByIdUniq(idUniq);
+
+        if (target == null)
+            return false;
+
+        String hashedOldPassword = target.getPassword();
+        if (BCrypt.checkpw(password, hashedOldPassword)) {
+            return false;
+        }
+
+        String encrypted = BCrypt.hashpw(password, BCrypt.gensalt());
+
+        return userRepository.updatePasswordByIdUniq(idUniq, encrypted) > 0;
+    }
+
+    /**
      * 사용자 계정 삭제하기.
      * TODO: JWT 사용자 인증 및 인가 추가.
      *

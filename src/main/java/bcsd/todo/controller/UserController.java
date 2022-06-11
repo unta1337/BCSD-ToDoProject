@@ -17,18 +17,8 @@ public class UserController {
     @Autowired
     private DefaultUserService userService;
 
-    /*
-     * TODO: 로그인 시 JWT 토큰 발급
-     *       JWT 사용한 인증 및 인가 구현
-     *       사용자 비밀번호 인증 로직 추가
-     *       사용자 제거 메소드 추가
-     */
-
     /**
      * User 컨트롤러 테스트용 메소드.
-     *
-     * @param
-     * @return
      */
     @RequestMapping(value = "/test", method = RequestMethod.GET)
     @ResponseBody
@@ -93,6 +83,7 @@ public class UserController {
      *
      * @param idUniq 사용자 고유 번호
      * @param hard Hard Delete 여부
+     * @return 사용자 계정 삭제 여부
      */
     @RequestMapping(value = "uniq/{idUniq}", method = RequestMethod.DELETE)
     @ResponseBody
@@ -110,5 +101,18 @@ public class UserController {
     @ResponseBody
     public Boolean restoreUserByIdUniq(@PathVariable("idUniq") Integer idUniq) {
         return userService.restoreUserByIdUniq(idUniq);
+    }
+
+    /**
+     * 사용자 비밀번호 변경하기.
+     *
+     * @param idUniq 사용자 고유 번호
+     * @param password 변경할 사용자 비밀번호
+     * @return 비밀번호 변경 여부
+     */
+    @RequestMapping(value = "/password/uniq/{idUniq}", method = RequestMethod.PATCH)
+    @ResponseBody
+    public Boolean updatePasswordByUniqId(@PathVariable("idUniq") Integer idUniq, @RequestBody String password) {
+        return userService.updatePasswordByIdUniq(idUniq, password);
     }
 }
