@@ -72,4 +72,38 @@ public class DefaultUserService implements UserService {
     public List<User> getUserById(String id) {
         return userRepository.getUserById(id);
     }
+
+    /**
+     * 사용자 계정 삭제하기.
+     * TODO: JWT 사용자 인증 및 인가 추가.
+     *
+     * @param idUniq 사용자 고유 번호
+     * @param hard Hard Delete 여부
+     * @return 사용자 계정 삭제 여부
+     */
+    @Override
+    public Boolean deleteUserByIdUniq(Integer idUniq, Boolean hard) {
+        if (hard)
+            return userRepository.deleteUserByIdUniqHard(idUniq) > 0;
+        return userRepository.deleteUserByIdUniq(idUniq) > 0;
+    }
+
+    /**
+     * 사용자 계정 복구하기.
+     * TODO: JWT 사용자 인증 및 인가 추가.
+     *
+     * @param idUniq 사용자 고유 번호
+     * @return 사용자 계정 복구 여부
+     */
+    @Override
+    public Boolean restoreUserByIdUniq(Integer idUniq) {
+        User targetUser = userRepository.getUserByIdUniq(idUniq);
+
+        if (targetUser == null)
+            return false;
+        if (targetUser.getValid())
+            return true;
+
+        return userRepository.restoreUserByIdUniq(idUniq) > 0;
+    }
 }

@@ -36,4 +36,21 @@ public interface UserService {
      * @return 사용자 정보 리스트 또는 빈 리스트
      */
     List<User> getUserById(String id);
+
+    /**
+     * 사용자 계정 삭제하기.
+     *
+     * @param idUniq 사용자 고유 번호
+     * @param hard Hard Delete 여부
+     * @return 사용자 계정 삭제 여부
+     */
+    Boolean deleteUserByIdUniq(Integer idUniq, Boolean hard);
+
+    /**
+     * 사용자 계정 복구하기.
+     *
+     * @param idUniq 사용자 고유 번호
+     * @return 사용자 계정 복구 여부
+     */
+    Boolean restoreUserByIdUniq(Integer idUniq);
 }

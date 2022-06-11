@@ -87,4 +87,28 @@ public class UserController {
     public List<User> getUserById(@PathVariable("id") String id) {
         return userService.getUserById(id);
     }
+
+    /**
+     * 사용자 계정 삭제하기.
+     *
+     * @param idUniq 사용자 고유 번호
+     * @param hard Hard Delete 여부
+     */
+    @RequestMapping(value = "uniq/{idUniq}", method = RequestMethod.DELETE)
+    @ResponseBody
+    public Boolean deleteUser(@PathVariable("idUniq") Integer idUniq, @RequestParam(value = "hard", defaultValue = "false") Boolean hard) {
+        return userService.deleteUserByIdUniq(idUniq, hard);
+    }
+
+    /**
+     * 사용자 계정 복구하기.
+     *
+     * @param idUniq 사용자 고유 번호
+     * @return 사용자 계정 복구 여부
+     */
+    @RequestMapping(value = "/uniq/{idUniq}", method = RequestMethod.PATCH)
+    @ResponseBody
+    public Boolean restoreUserByIdUniq(@PathVariable("idUniq") Integer idUniq) {
+        return userService.restoreUserByIdUniq(idUniq);
+    }
 }

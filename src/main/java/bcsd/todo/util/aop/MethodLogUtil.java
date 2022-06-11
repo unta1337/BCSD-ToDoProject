@@ -1,6 +1,6 @@
-package bcsd.todo.aop;
+package bcsd.todo.util.aop;
 
-import bcsd.todo.util.TimeKeeper;
+import bcsd.todo.util.LogUtil;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Aspect
-public class LogAOP {
+public class MethodLogUtil {
     /**
      * 현재 실행된 메소드의 실행 시각과 실행 시간 출력.
      *
@@ -21,14 +21,14 @@ public class LogAOP {
      */
     @Around("execution(* bcsd.todo.controller.*.*(..))")
     public Object executionTimeCheck(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-        System.out.println(TimeKeeper.getCurrentTime() + " Executing " + proceedingJoinPoint.getSignature().getName() + "...");
+        LogUtil.logWithTime("Executing " + proceedingJoinPoint.getSignature().getName() + "...");
 
         long start = System.currentTimeMillis();
         Object obj = proceedingJoinPoint.proceed();
         long end = System.currentTimeMillis();
 
         long duration = end - start;
-        System.out.println(TimeKeeper.getCurrentTime() + " Execution Time: " + duration + " milliseconds.");
+        LogUtil.logWithTime("Execution Time: " + duration + " milliseconds.");
 
         return obj;
     }

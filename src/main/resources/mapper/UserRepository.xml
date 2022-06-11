@@ -19,4 +19,16 @@
     <select id="getUserById" resultMap="user">
         select * from user where id = #{id}
     </select>
+
+    <update id="deleteUserByIdUniq">
+        update user set is_valid = 0 where id_uniq = #{id_uniq}
+    </update>
+
+    <delete id="deleteUserByIdUniqHard">
+        delete from user where id_uniq = #{id_uniq}
+    </delete>
+
+    <update id="restoreUserByIdUniq">
+        update user set is_valid = 1 where id_uniq = #{id_uniq}
+    </update>
 </mapper>

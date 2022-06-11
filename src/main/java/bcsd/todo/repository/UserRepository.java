@@ -35,4 +35,26 @@ public interface UserRepository {
      * @return 사용자 정보 리스트 또는 빈 리스트
      */
     List<User> getUserById(@Param("id") String id);
+
+    /**
+     * 사용자 계정 삭제하기. (Soft Delete)
+     *
+     * @param idUniq 사용자 고유 번호
+     */
+    Integer deleteUserByIdUniq(@Param("id_uniq") Integer idUniq);
+
+    /**
+     * 사용자 계정 삭제하기. (Hard Delete)
+     *
+     * @param idUniq 사용자 고유 번호
+     */
+    Integer deleteUserByIdUniqHard(@Param("id_uniq") Integer idUniq);
+
+    /**
+     * 사용자 계정 복구하기.
+     * 사용자 계정 삭제가 Soft Delete로 수행됐을 때만 가능하다.
+     *
+     * @param idUniq 사용자 고유 번호
+     */
+    Integer restoreUserByIdUniq(@Param("id_uniq") Integer idUniq);
 }
