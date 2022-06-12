@@ -1,4 +1,4 @@
 package bcsd.todo.annotation;
 
-public @interface AuthPassword {
+public @interface CheckUser {
 }

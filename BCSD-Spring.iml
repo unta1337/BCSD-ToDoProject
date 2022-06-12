@@ -9,6 +9,7 @@
         <webroots>
           <root url="file://$MODULE_DIR$/src/webapp" relative="/" />
         </webroots>
+        <sourceRoots />
       </configuration>
     </facet>
     <facet type="Spring" name="Spring">
@@ -21,17 +22,6 @@
           <file>file://$MODULE_DIR$/out/artifacts/BCSD_Spring_war_exploded/WEB-INF/classes/mybatis/mybatis.xml</file>
           <file>file://$MODULE_DIR$/src/main/resources/mybatis/mybatis.xml</file>
         </fileset>
-      </configuration>
-    </facet>
-    <facet type="web" name="Web2">
-      <configuration>
-        <descriptors>
-          <deploymentDescriptor name="web.xml" url="file://$MODULE_DIR$/out/artifacts/BCSD_Spring_war_exploded/WEB-INF/web.xml" />
-        </descriptors>
-        <webroots>
-          <root url="file://$MODULE_DIR$/out/artifacts/BCSD_Spring_war_exploded" relative="/" />
-        </webroots>
-        <sourceRoots />
       </configuration>
     </facet>
   </component>
@@ -72,5 +62,6 @@
     <orderEntry type="library" name="Maven: com.auth0:java-jwt:3.19.2" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.security:spring-security-crypto:5.7.1" level="project" />
     <orderEntry type="library" name="Maven: javax.servlet:javax.servlet-api:4.0.1" level="project" />
+    <orderEntry type="library" name="Maven: javax.servlet.jsp:jsp-api:2.2" level="project" />
   </component>
 </module>

@@ -10,13 +10,13 @@ import org.springframework.stereotype.Component;
  */
 @Aspect
 @Component
-public class AuthUtil {
+public class UserUtil {
     /**
      * 사용자 비밀번호 유효성 검사.
      *
      * @param joinPoint 사용자 서비스 메소드 정보
      */
-    @Before("@annotation(bcsd.todo.annotation.AuthPassword)")
-    public void authPassword(JoinPoint joinPoint) {
+    @Before("@annotation(bcsd.todo.annotation.CheckUser)")
+    public void checkUser(JoinPoint joinPoint) {
     }
 }

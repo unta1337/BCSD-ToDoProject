@@ -4,6 +4,7 @@ import bcsd.todo.util.LogUtil;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
 /**
@@ -12,6 +13,18 @@ import org.springframework.stereotype.Component;
 @Component
 @Aspect
 public class MethodLogUtil {
+    @Pointcut("execution(* bcsd.todo.controller..*(..))")
+    public void controller() { }
+
+    @Pointcut("execution(* bcsd.todo.repository..*(..))")
+    public void repository() { }
+
+    @Pointcut("execution(* bcsd.todo.service..*(..))")
+    public void service() { }
+
+    @Pointcut("controller() || repository() || service()")
+    public void all() { }
+
     /**
      * 현재 실행된 메소드의 실행 시각과 실행 시간 출력.
      *
@@ -19,7 +32,7 @@ public class MethodLogUtil {
      * @return 실행된 메소드 정보
      * @throws Throwable AOP 실행 중 발생 가능한 예외
      */
-    @Around("execution(* bcsd.todo.controller.*.*(..))")
+    @Around("all()")
     public Object executionTimeCheck(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         LogUtil.logWithTime("Executing " + proceedingJoinPoint.getSignature().getName() + "...");
 

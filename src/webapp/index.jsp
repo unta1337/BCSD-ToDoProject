@@ -1,13 +1,14 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
+
+<!DOCTYPE html>
 <html>
   <head>
-    <title>418 I'm a teapot</title>
+    <meta charset="utf-8">
+    <title>index</title>
   </head>
   <body>
-    <div style="text-align: center">
-      <h1>418 I'm a teapot</h1>
-      <hr>
-      <a href="https://unta.io">unta.io</a>
-    </div>
+    <%
+      pageContext.forward("WEB-INF/view/error/418.jsp");
+    %>
   </body>
 </html>

@@ -3,9 +3,11 @@ package bcsd.todo.controller;
 import bcsd.todo.domain.User;
 import bcsd.todo.service.user.impl.DefaultUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 /**
@@ -18,101 +20,82 @@ public class UserController {
     private DefaultUserService userService;
 
     /**
-     * User 컨트롤러 테스트용 메소드.
-     */
-    @RequestMapping(value = "/test", method = RequestMethod.GET)
-    @ResponseBody
-    public String test() {
-        String id = "test";
-        String password = "1234";
-
-        Boolean trial = userService.createUser(id, password);
-
-        return Boolean.toString(trial);
-    }
-
-    /**
-     * 사용자로부터 아이디와 비밀번호를 입력 받아 새로운 사용자 계정 생성.
-     *
-     * @param user 생성할 사용자 정보
-     * @return 사용자 계정 생성 여부
-     */
-    @RequestMapping(method = RequestMethod.POST)
-    @ResponseBody
-    public Boolean createUser(@RequestBody User user) {
-        String id = user.getId();
-        String password = user.getPassword();
-
-        // 아이디 또는 비밀번호가 없으면 사용자 생성 실패.
-        if (id == null || password == null) {
-            return false;
-        }
-        if (id.length() == 0 || password.length() == 0) {
-            return false;
-        }
-
-        return userService.createUser(id, password);
-    }
-
-    /**
-     * 사용자의 고유 번호를 이용해 사용자 정보 불러오기.
-     *
-     * @param idUniq 사용자 고유 번호
-     * @return 사용자 정보 또는 null
-     */
-    @RequestMapping(value = "/uniq/{idUniq}", method = RequestMethod.GET)
-    @ResponseBody
-    public User getUserByIdUniq(@PathVariable("idUniq") Integer idUniq) {
-        return userService.getUserByIdUniq(idUniq);
-    }
-
-    /**
-     * 사용자의 아이디를 이용해 사용자 정보 불러오기.
+     * 타 사용자의 사용자 조회 요청에 대해 사용자 정보 페이지 출력하기.
      *
      * @param id 사용자 아이디
-     * @return 사용자 정보 리스트 또는 빈 리스트
+     * @param session 브라우저 세션
+     * @return 사용자 정보 페이지 또는 No such user 페이지
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    @ResponseBody
-    public List<User> getUserById(@PathVariable("id") String id) {
-        return userService.getUserById(id);
+    public String getUserInfoPage(@PathVariable("id") String id, HttpSession session) {
+        List<User> targetUsers = userService.getUserById(id);
+
+        if (targetUsers.size() == 0)
+            return "error/noSuchUser";
+
+        User targetUser = null;
+        for (User tu : targetUsers) {
+            if (tu.getValid()) {
+                targetUser = tu;
+                break;
+            }
+        }
+
+        if (targetUser == null)
+            return "error/noSuchUser";
+
+        if (!id.equals(session.getAttribute("id"))) {
+            return "userInfoOther";
+        }
+
+        return "userInfo";
     }
 
     /**
-     * 사용자 계정 삭제하기.
+     * 로그인 성공 시 사용자 정보 페이지 출력하기.
      *
-     * @param idUniq 사용자 고유 번호
-     * @param hard Hard Delete 여부
-     * @return 사용자 계정 삭제 여부
+     * @param id 사용자 아이디
+     * @param body POST 요청 바디
+     * @param session 브라우저 세션
+     * @return 사용자 정보 페이지 또는 No such user 페이지
      */
-    @RequestMapping(value = "uniq/{idUniq}", method = RequestMethod.DELETE)
-    @ResponseBody
-    public Boolean deleteUser(@PathVariable("idUniq") Integer idUniq, @RequestParam(value = "hard", defaultValue = "false") Boolean hard) {
-        return userService.deleteUserByIdUniq(idUniq, hard);
+    @RequestMapping(value = "/{id}", method = RequestMethod.POST)
+    public String getUserInfoPage(@PathVariable("id") String id, @ModelAttribute User body, HttpSession session) {
+        List<User> targetUsers = userService.getUserById(id);
+
+        if (targetUsers.size() == 0)
+            return "error/noSuchUser";
+
+        User targetUser = null;
+        for (User tu : targetUsers) {
+            if (tu.getValid()) {
+                targetUser = tu;
+                break;
+            }
+        }
+
+        if (targetUser == null)
+            return "error/noSuchUser";
+
+        if (!BCrypt.checkpw(body.getPassword(), targetUser.getPassword()))
+            return "error/418";
+
+        session.setAttribute("id", id);
+        session.setAttribute("password", targetUser.getPassword());
+
+        return "userInfo";
     }
 
     /**
-     * 사용자 계정 복구하기.
+     * 로그아웃하기.
      *
-     * @param idUniq 사용자 고유 번호
-     * @return 사용자 계정 복구 여부
+     * @param session 브라우저 세션
+     * @return 로그인 페이지
      */
-    @RequestMapping(value = "/uniq/{idUniq}", method = RequestMethod.PATCH)
-    @ResponseBody
-    public Boolean restoreUserByIdUniq(@PathVariable("idUniq") Integer idUniq) {
-        return userService.restoreUserByIdUniq(idUniq);
-    }
+    @RequestMapping(value = "/logout", method = RequestMethod.POST)
+    public String logout(HttpSession session) {
+        session.invalidate();
 
-    /**
-     * 사용자 비밀번호 변경하기.
-     *
-     * @param idUniq 사용자 고유 번호
-     * @param password 변경할 사용자 비밀번호
-     * @return 비밀번호 변경 여부
-     */
-    @RequestMapping(value = "/password/uniq/{idUniq}", method = RequestMethod.PATCH)
-    @ResponseBody
-    public Boolean updatePasswordByUniqId(@PathVariable("idUniq") Integer idUniq, @RequestBody String password) {
-        return userService.updatePasswordByIdUniq(idUniq, password);
+        return "redirect:/login";
     }
 }

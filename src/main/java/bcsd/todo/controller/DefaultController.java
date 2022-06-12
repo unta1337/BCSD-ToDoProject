@@ -1,38 +1,23 @@
 package bcsd.todo.controller;
 
-import org.springframework.security.crypto.bcrypt.BCrypt;
+import bcsd.todo.service.user.impl.DefaultUserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
+/**
+ * 메인 페이지 컨트롤러.
+ */
 @Controller
 public class DefaultController {
-    @RequestMapping(value = "/index", method = RequestMethod.GET)
-    public String index() {
-        return "index";
-    }
+    @Autowired
+    private DefaultUserService userService;
 
-    @RequestMapping(value = "/genHash/{password}", method = RequestMethod.GET)
-    @ResponseBody
-    public String genHash(@PathVariable("password") String password) {
-        String encrypted = BCrypt.hashpw(password, BCrypt.gensalt());
-
-        return String.format("%s | %d", encrypted, encrypted.length());
-    }
-
-    @RequestMapping(value = "/checkHash/{password}", method = RequestMethod.GET)
-    @ResponseBody
-    public Boolean checkHash(@PathVariable("password") String password, String hash) {
-        return BCrypt.checkpw(password, hash);
-    }
-
-    @RequestMapping(value = "/post", method = RequestMethod.POST)
-    @ResponseBody
-    public String postTest(HttpServletRequest request) {
-        return request.getParameter("id");
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    public String index(HttpSession session) {
+        return "login";
     }
 }
