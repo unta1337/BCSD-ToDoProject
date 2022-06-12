@@ -1,4 +1,4 @@
 package bcsd.todo.annotation;
 
-public @interface CheckUser {
+public @interface Session {
 }

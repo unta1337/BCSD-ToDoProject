@@ -1,4 +1,4 @@
-package bcsd.todo.util;
+package bcsd.todo.utility;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.reflect.CodeSignature;
@@ -9,7 +9,7 @@ import java.util.TreeMap;
 /**
  * AOP 메소드에서 사용되는 유틸리티 클래스.
  */
-public class AOPUtil {
+public class AspectUtility {
     /**
      * Before 또는 After 어노테이션의 JointPoint로부터 인수 추출하기.
      *

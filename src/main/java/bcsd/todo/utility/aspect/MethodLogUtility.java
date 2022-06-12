@@ -1,6 +1,6 @@
-package bcsd.todo.util.aop;
+package bcsd.todo.utility.aspect;
 
-import bcsd.todo.util.LogUtil;
+import bcsd.todo.utility.LogUtility;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Aspect
-public class MethodLogUtil {
+public class MethodLogUtility {
     @Pointcut("execution(* bcsd.todo.controller..*(..))")
     public void controller() { }
 
@@ -34,14 +34,14 @@ public class MethodLogUtil {
      */
     @Around("all()")
     public Object executionTimeCheck(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-        LogUtil.logWithTime("Executing " + proceedingJoinPoint.getSignature().getName() + "...");
+        LogUtility.logWithTime("Executing " + proceedingJoinPoint.getSignature().getName() + "...");
 
         long start = System.currentTimeMillis();
         Object obj = proceedingJoinPoint.proceed();
         long end = System.currentTimeMillis();
 
         long duration = end - start;
-        LogUtil.logWithTime("Execution Time: " + duration + " milliseconds.");
+        LogUtility.logWithTime("Execution Time: " + duration + " milliseconds.");
 
         return obj;
     }

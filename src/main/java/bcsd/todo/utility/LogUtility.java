@@ -1,6 +1,6 @@
-package bcsd.todo.util;
+package bcsd.todo.utility;
 
-public class LogUtil {
+public class LogUtility {
     public static void log(String text) {
         System.out.println(text);
     }

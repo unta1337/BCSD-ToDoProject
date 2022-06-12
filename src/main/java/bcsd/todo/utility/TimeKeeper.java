@@ -1,4 +1,4 @@
-package bcsd.todo.util;
+package bcsd.todo.utility;
 
 import java.time.LocalDateTime;
 

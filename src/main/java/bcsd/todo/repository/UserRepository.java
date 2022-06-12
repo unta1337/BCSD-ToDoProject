@@ -6,8 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-// TODO: 사용자 아이디 및 비밀번호 유요성 판단 로직 추가.
-
 /**
  * 사용자 리포지토리 클래스.
  */
