@@ -12,15 +12,27 @@ import org.springframework.stereotype.Component;
 @Component
 @Aspect
 public class MethodLogUtility {
+    /**
+     * 컨트롤러 클래스 포인트 컷.
+     */
     @Pointcut("execution(* bcsd.todo.controller..*(..))")
     public void controller() { }
 
+    /**
+     * 리포지토리 클래스 포인트 컷.
+     */
     @Pointcut("execution(* bcsd.todo.repository..*(..))")
     public void repository() { }
 
+    /**
+     * 서비스 클래스 포인트 컷.
+     */
     @Pointcut("execution(* bcsd.todo.service..*(..))")
     public void service() { }
 
+    /**
+     * MVC 클래스 포인트 컷.
+     */
     @Pointcut("controller() || repository() || service()")
     public void all() { }
 

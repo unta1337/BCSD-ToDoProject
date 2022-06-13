@@ -11,7 +11,7 @@ import java.util.TreeMap;
  */
 public class AspectUtility {
     /**
-     * Before 또는 After 어노테이션의 JointPoint로부터 인수 추출하기.
+     * Before 또는 After 어노테이션의 JointPoint로부터 인수 추출.
      *
      * @param joinPoint AOP 메소드 정보
      * @return AOP 메소드의 JointPoint의 인수 목록

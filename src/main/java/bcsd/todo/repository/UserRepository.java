@@ -21,7 +21,7 @@ public interface UserRepository {
     Integer createUser(@Param("id") String id, @Param("password") String password);
 
     /**
-     * 사용자의 고유 번호를 이용해 사용자 정보 불러오기.
+     * 사용자의 고유 번호를 이용해 사용자 정보 조회.
      *
      * @param idUniq 사용자 고유 번호
      * @return 사용자 정보 또는 null
@@ -29,7 +29,7 @@ public interface UserRepository {
     User getUserByIdUniq(@Param("id_uniq") Integer idUniq);
 
     /**
-     * 사용자의 아이디를 이용해 사용자 정보 불러오기.
+     * 사용자의 아이디를 이용해 사용자 정보 조회.
      *
      * @param id 사용자 아이디
      * @return 사용자 정보 리스트 또는 빈 리스트
@@ -37,21 +37,21 @@ public interface UserRepository {
     List<User> getUserById(@Param("id") String id);
 
     /**
-     * 사용자 계정 삭제하기. (Soft Delete)
+     * 사용자 계정 삭제. (Soft Delete)
      *
      * @param idUniq 사용자 고유 번호
      */
     Integer deleteUserByIdUniq(@Param("id_uniq") Integer idUniq);
 
     /**
-     * 사용자 계정 삭제하기. (Hard Delete)
+     * 사용자 계정 삭제. (Hard Delete)
      *
      * @param idUniq 사용자 고유 번호
      */
     Integer deleteUserByIdUniqHard(@Param("id_uniq") Integer idUniq);
 
     /**
-     * 사용자 계정 복구하기.
+     * 사용자 계정 복구.
      * 사용자 계정 삭제가 Soft Delete로 수행됐을 때만 가능하다.
      *
      * @param idUniq 사용자 고유 번호
@@ -59,7 +59,7 @@ public interface UserRepository {
     Integer restoreUserByIdUniq(@Param("id_uniq") Integer idUniq);
 
     /**
-     * 사용자 비밀번호 변경하기.
+     * 사용자 비밀번호 변경.
      *
      * @param idUniq 사용자 고유 번호
      * @param password 사용자 비밀번호

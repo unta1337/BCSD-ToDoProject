@@ -9,15 +9,25 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 기본 사용자 서비스 클래스.
  */
 @Service
 public class DefaultUserService implements UserService {
+    /**
+     * 사용자 리포지토리 객체.
+     */
     @Autowired
     private UserRepository userRepository;
 
+    /**
+     * 사용자 유효성 검사.
+     *
+     * @param id 사용자 아이디
+     * @return 사용자 유효성
+     */
     public Boolean isValidUser(String id) {
         return getUserById(id) != null;
     }
@@ -63,7 +73,7 @@ public class DefaultUserService implements UserService {
     }
 
     /**
-     * 사용자의 고유 번호를 이용해 사용자 정보 불러오기.
+     * 사용자의 고유 번호를 이용해 사용자 정보 조회.
      *
      * @param idUniq 사용자 고유 번호
      * @return 사용자 정보 또는 null
@@ -74,7 +84,7 @@ public class DefaultUserService implements UserService {
     }
 
     /**
-     * 사용자의 아이디를 이용해 사용자 정보 불러오기.
+     * 사용자의 아이디를 이용해 사용자 정보 조회.
      *
      * @param id 사용자 아이디
      * @return 사용자 정보 리스트 또는 빈 리스트
@@ -85,7 +95,7 @@ public class DefaultUserService implements UserService {
     }
 
     /**
-     * 사용자의 아이디를 이용해 한 명의 사용자 정보 불러오기.
+     * 사용자의 아이디를 이용해 한 명의 사용자 정보 조회.
      *
      * @param id 사용자 아이디
      * @return 사용자 정보 또는 null
@@ -97,11 +107,14 @@ public class DefaultUserService implements UserService {
             return null;
         }
 
-        return users.stream().filter(u -> u.getValid()).findFirst().get();
+        Optional<User> optionalUser = users.stream().filter(User::getValid).findFirst();
+        if (optionalUser.isEmpty())
+            return null;
+        return optionalUser.get();
     }
 
     /**
-     * 사용자 비밀번호 변경하기.
+     * 사용자 비밀번호 변경.
      *
      * @param idUniq 사용자 고유 번호
      * @param password 사용자 비밀번호
@@ -126,7 +139,7 @@ public class DefaultUserService implements UserService {
     }
 
     /**
-     * 사용자 계정 삭제하기.
+     * 사용자 계정 삭제.
      *
      * @param idUniq 사용자 고유 번호
      * @param hard Hard Delete 여부
@@ -141,7 +154,7 @@ public class DefaultUserService implements UserService {
     }
 
     /**
-     * 사용자 계정 복구하기.
+     * 사용자 계정 복구.
      *
      * @param idUniq 사용자 고유 번호
      * @return 사용자 계정 복구 여부

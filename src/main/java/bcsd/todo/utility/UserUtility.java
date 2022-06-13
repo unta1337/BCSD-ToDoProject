@@ -23,10 +23,19 @@ import java.util.Map;
 @Aspect
 @Component
 public class UserUtility {
+    /**
+     * 사용자 서비스 객체.
+     */
     @Autowired
     private DefaultUserService userService;
+    /**
+     * 현재 접속 중인 세션.
+     */
     @Autowired
     private HttpSession session;
+    /**
+     * 현제 요청된 HTTP Request.
+     */
     @Autowired
     private HttpServletRequest request;
 

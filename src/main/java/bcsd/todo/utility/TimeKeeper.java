@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
  */
 public class TimeKeeper {
     /**
-     * 현재 시각 불러오기.
+     * 현재 시각 출력.
      *
      * @return 현재 시각
      */

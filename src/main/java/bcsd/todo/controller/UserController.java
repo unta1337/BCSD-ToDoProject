@@ -17,6 +17,9 @@ import javax.servlet.http.HttpSession;
 @Controller
 @RequestMapping(value = "/user")
 public class UserController {
+    /**
+     * 사용자 서비스 객체.
+     */
     @Autowired
     private DefaultUserService userService;
 
@@ -45,7 +48,6 @@ public class UserController {
         if (userService.getAuthorize()) {
             return "userInfo";
         } else {
-            System.out.println("no auth");
             return "userInfoOther";
         }
     }
