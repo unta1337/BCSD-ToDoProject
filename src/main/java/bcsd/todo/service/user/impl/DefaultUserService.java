@@ -1,5 +1,6 @@
 package bcsd.todo.service.user.impl;
 
+import bcsd.todo.annotation.Authorize;
 import bcsd.todo.domain.User;
 import bcsd.todo.repository.UserRepository;
 import bcsd.todo.service.user.UserService;
@@ -18,26 +19,16 @@ public class DefaultUserService implements UserService {
     private UserRepository userRepository;
 
     public Boolean isValidUser(String id) {
-        // 조회를 시도하려는 사용자 조회.
-        List<User> targetUsers = getUsersById(id);
+        return getUserById(id) != null;
+    }
 
-        // 사용자가 존재하지 않으면 false 반환.
-        if (targetUsers.size() == 0) {
-            return false;
-        }
-
-        // 사용자가 존재하지 않으면 false 반환.
-        User targetUser = null;
-        for (User tu : targetUsers) {
-            if (tu.getValid()) {
-                targetUser = tu;
-                break;
-            }
-        }
-        if (targetUser == null) {
-            return false;
-        }
-
+    /**
+     * 사용자 인가 Aspect의 메소드.
+     *
+     * @return 사용자 인가 여부
+     */
+    @Authorize
+    public Boolean getAuthorize() {
         return true;
     }
 
@@ -50,15 +41,11 @@ public class DefaultUserService implements UserService {
      */
     @Override
     public Boolean createUser(String id, String password) {
-        List<User> oldUsers = getUsersById(id);
+        List<User> oldUser = getUsersById(id);
 
-        // 기존의 동일한 아이디를 가진 사용자가 존재하면 해당 사용자가 유효한지 검사.
-        // 동일한 아이디를 가진 유효한 사용자가 있으면 계정 생성 실패.
-        if (oldUsers.size() > 0) {
-            for (User oldUser : oldUsers) {
-                if (oldUser.getValid())
-                    return false;
-            }
+        // 동일한 아이디를 가진 기존 사용자가 있으면 계정 생성 실패.
+        if (oldUser != null) {
+            return false;
         }
 
         String encryptedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
@@ -98,6 +85,22 @@ public class DefaultUserService implements UserService {
     }
 
     /**
+     * 사용자의 아이디를 이용해 한 명의 사용자 정보 불러오기.
+     *
+     * @param id 사용자 아이디
+     * @return 사용자 정보 또는 null
+     */
+    public User getUserById(String id) {
+        List<User> users = getUsersById(id);
+
+        if (users.size() == 0) {
+            return null;
+        }
+
+        return users.stream().filter(u -> u.getValid()).findFirst().get();
+    }
+
+    /**
      * 사용자 비밀번호 변경하기.
      *
      * @param idUniq 사용자 고유 번호
@@ -105,6 +108,7 @@ public class DefaultUserService implements UserService {
      * @return 비밀번호 변경 여부
      */
     @Override
+    @Authorize
     public Boolean updatePasswordByIdUniq(Integer idUniq, String password) {
         User target = getUserByIdUniq(idUniq);
 
@@ -129,6 +133,7 @@ public class DefaultUserService implements UserService {
      * @return 사용자 계정 삭제 여부
      */
     @Override
+    @Authorize
     public Boolean deleteUserByIdUniq(Integer idUniq, Boolean hard) {
         if (hard)
             return userRepository.deleteUserByIdUniqHard(idUniq) > 0;
@@ -142,6 +147,7 @@ public class DefaultUserService implements UserService {
      * @return 사용자 계정 복구 여부
      */
     @Override
+    @Authorize
     public Boolean restoreUserByIdUniq(Integer idUniq) {
         User targetUser = userRepository.getUserByIdUniq(idUniq);
 

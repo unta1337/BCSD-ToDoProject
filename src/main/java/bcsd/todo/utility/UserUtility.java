@@ -3,6 +3,8 @@ package bcsd.todo.utility;
 import bcsd.todo.domain.User;
 import bcsd.todo.service.user.impl.DefaultUserService;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +37,6 @@ public class UserUtility {
      */
     @Before("@annotation(bcsd.todo.annotation.Authenticate)")
     public void authenticateUser(JoinPoint joinPoint) {
-        // TODO: 사용자 유효성 검사와 BCrypt 검사 분리 요망.
         Map<String, Object> args = AspectUtility.getArgumentMap(joinPoint);
 
         // 로그인을 시도하는 사용자 조회.
@@ -63,33 +64,28 @@ public class UserUtility {
     /**
      * 사용자 인가.
      *
-     * @param joinPoint 사용자 서비스 메소드 정보
+     * @param proceedingJointPoint 사용자 서비스 메소드 정보
      */
-    @Before("@annotation(bcsd.todo.annotation.Authorize)")
-    public void authorizeUser(JoinPoint joinPoint) {
+    @Around("@annotation(bcsd.todo.annotation.Authorize)")
+    public Object authorizeUser(ProceedingJoinPoint proceedingJointPoint) throws Throwable {
         // 현재 세션에 등록된 사용자 조회.
         User sessionUser = (User) session.getAttribute("sessionUser");
 
         // 세션에 로그인한 사용자가 없으면 false.
         if (sessionUser == null) {
-            System.out.println("no user");
-            session.setAttribute("authorizationResult", false);
-            return;
+            return false;
         }
 
         // 위의 구문을 거쳤으면 사용자가 로그인한 상태임을 보장할 수 있으므로 별도의 예외처리가 필요하지 않음.
         Cookie[] cookies = request.getCookies();
         String token = Arrays.stream(cookies).filter(c -> c.getName().equals("token")).findFirst().get().getValue();
 
-        // 토큰이 유효하지 않거나 사용자 아이디가 일치하지 않으면 false.
-        if (!TokenUtil.verifyToken(token) || session.getAttribute("targetUserId").equals(sessionUser.getId())) {
-            System.out.println("no vaild");
-            session.setAttribute("authorizationResult", false);
-            return;
+        // 토큰이 유효하지 않으면 false.
+        if (!TokenUtil.verifyToken(token)) {
+            return false;
         }
 
         // 정상 인가.
-        System.out.println("good");
-        session.setAttribute("authorizationResult", true);
+        return proceedingJointPoint.proceed();
     }
 }

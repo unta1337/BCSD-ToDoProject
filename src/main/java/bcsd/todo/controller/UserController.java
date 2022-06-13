@@ -1,7 +1,6 @@
 package bcsd.todo.controller;
 
 import bcsd.todo.annotation.Authenticate;
-import bcsd.todo.annotation.Authorize;
 import bcsd.todo.domain.User;
 import bcsd.todo.service.user.impl.DefaultUserService;
 import bcsd.todo.utility.TokenUtil;
@@ -29,23 +28,24 @@ public class UserController {
      * @return 사용자 정보 페이지 또는 No such user 페이지
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    @Authorize
     public String getUserInfoPage(@PathVariable("id") String id, HttpSession session) {
-        if (!userService.isValidUser(id)) {
+        User targetUser = userService.getUserById(id);
+        session.setAttribute("targetUser", targetUser);
+
+        if (targetUser == null) {
             return "error/noSuchUser";
         }
 
-        session.setAttribute("targetUserId", id);
+        User sessionUser = (User) session.getAttribute("sessionUser");
 
-        Boolean authorizationResult = (Boolean) session.getAttribute("authorizationResult");
-
-        if (authorizationResult == null) {
-            return "error/500";
+        if (sessionUser == null || !id.equals(sessionUser.getId())) {
+            return "userInfoOther";
         }
 
-        if (authorizationResult) {
+        if (userService.getAuthorize()) {
             return "userInfo";
         } else {
+            System.out.println("no auth");
             return "userInfoOther";
         }
     }

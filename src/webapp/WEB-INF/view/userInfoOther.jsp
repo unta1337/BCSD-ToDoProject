@@ -6,10 +6,14 @@
     <head>
         <meta charset="utf-8">
         <title>사용자 정보</title>
+
+        <%
+            User user = (User) session.getAttribute("targetUser");
+        %>
     </head>
     <body>
     <div style="text-align: center">
-        <h1><%= session.getAttribute("targetUserId") %></h1>
+        <h1><%= user.getId() %></h1>
         <hr>
         <footer>BCSD-ToDo</footer>
     </div>
