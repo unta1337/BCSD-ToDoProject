@@ -1,6 +1,5 @@
 package bcsd.todo.utility;
 
-import bcsd.todo.utility.LogUtility;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;

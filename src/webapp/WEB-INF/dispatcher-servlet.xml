@@ -14,7 +14,7 @@
        https://www.springframework.org/schema/aop/spring-aop.xsd">
 
     <mvc:annotation-driven/>
-    <context:component-scan base-package="bcsd.todo.utility.aspect"/>
+    <context:component-scan base-package="bcsd.todo.utility"/>
     <context:component-scan base-package="bcsd.todo.controller"/>
     <aop:aspectj-autoproxy/>
 

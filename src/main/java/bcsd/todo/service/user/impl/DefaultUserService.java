@@ -17,6 +17,30 @@ public class DefaultUserService implements UserService {
     @Autowired
     private UserRepository userRepository;
 
+    public Boolean isValidUser(String id) {
+        // 조회를 시도하려는 사용자 조회.
+        List<User> targetUsers = getUsersById(id);
+
+        // 사용자가 존재하지 않으면 false 반환.
+        if (targetUsers.size() == 0) {
+            return false;
+        }
+
+        // 사용자가 존재하지 않으면 false 반환.
+        User targetUser = null;
+        for (User tu : targetUsers) {
+            if (tu.getValid()) {
+                targetUser = tu;
+                break;
+            }
+        }
+        if (targetUser == null) {
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * 사용자로부터 아이디와 비밀번호를 입력 받아 새로운 사용자 계정 생성.
      *
@@ -26,7 +50,7 @@ public class DefaultUserService implements UserService {
      */
     @Override
     public Boolean createUser(String id, String password) {
-        List<User> oldUsers = getUserById(id);
+        List<User> oldUsers = getUsersById(id);
 
         // 기존의 동일한 아이디를 가진 사용자가 존재하면 해당 사용자가 유효한지 검사.
         // 동일한 아이디를 가진 유효한 사용자가 있으면 계정 생성 실패.
@@ -69,13 +93,12 @@ public class DefaultUserService implements UserService {
      * @return 사용자 정보 리스트 또는 빈 리스트
      */
     @Override
-    public List<User> getUserById(String id) {
+    public List<User> getUsersById(String id) {
         return userRepository.getUserById(id);
     }
 
     /**
      * 사용자 비밀번호 변경하기.
-     * TODO: JWT 사용자 인증 및 인가 추가.
      *
      * @param idUniq 사용자 고유 번호
      * @param password 사용자 비밀번호
@@ -100,7 +123,6 @@ public class DefaultUserService implements UserService {
 
     /**
      * 사용자 계정 삭제하기.
-     * TODO: JWT 사용자 인증 및 인가 추가.
      *
      * @param idUniq 사용자 고유 번호
      * @param hard Hard Delete 여부
@@ -115,7 +137,6 @@ public class DefaultUserService implements UserService {
 
     /**
      * 사용자 계정 복구하기.
-     * TODO: JWT 사용자 인증 및 인가 추가.
      *
      * @param idUniq 사용자 고유 번호
      * @return 사용자 계정 복구 여부

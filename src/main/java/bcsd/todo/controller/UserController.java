@@ -3,8 +3,6 @@ package bcsd.todo.controller;
 import bcsd.todo.annotation.Authenticate;
 import bcsd.todo.annotation.Authorize;
 import bcsd.todo.domain.User;
-import bcsd.todo.enumerator.AuthenticationResult;
-import bcsd.todo.enumerator.AuthorizationResult;
 import bcsd.todo.service.user.impl.DefaultUserService;
 import bcsd.todo.utility.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,18 +31,23 @@ public class UserController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @Authorize
     public String getUserInfoPage(@PathVariable("id") String id, HttpSession session) {
-        session.setAttribute("targetUserId", id);
-
-        switch ((AuthorizationResult) session.getAttribute("authorizationResult")) {
-            case AUTHORIZED:
-                return "userInfo";
-            case GUEST:
-                return "userInfoOther";
-            case NO_SUCH_USER:
-                return "error/noSuchUser";
+        if (!userService.isValidUser(id)) {
+            return "error/noSuchUser";
         }
 
-        return "error/500";
+        session.setAttribute("targetUserId", id);
+
+        Boolean authorizationResult = (Boolean) session.getAttribute("authorizationResult");
+
+        if (authorizationResult == null) {
+            return "error/500";
+        }
+
+        if (authorizationResult) {
+            return "userInfo";
+        } else {
+            return "userInfoOther";
+        }
     }
 
     /**
@@ -58,17 +61,22 @@ public class UserController {
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
     @Authenticate
     public String getUserInfoPage(@PathVariable("id") String id, @ModelAttribute User body, HttpSession session, HttpServletResponse response) {
-        switch ((AuthenticationResult) session.getAttribute("authenticationResult")) {
-            case AUTHENTICATED:
-                TokenUtil.sendTokenViaCookie(id, response);
-                return "userInfo";
-            case INCORRECT_PASSWORD:
-                return "error/418";
-            case NO_SUCH_USER:
-                return "error/noSuchUser";
+        if (!userService.isValidUser(id)) {
+            return "error/noSuchUser";
         }
 
-        return "error/500";
+        Boolean authenticationResult = (Boolean) session.getAttribute("authenticationResult");
+
+        if (authenticationResult == null) {
+            return "error/500";
+        }
+
+        if (authenticationResult) {
+            TokenUtil.sendTokenViaCookie(id, response);
+            return "userInfo";
+        } else {
+            return "error/418";
+        }
     }
 
     /**
