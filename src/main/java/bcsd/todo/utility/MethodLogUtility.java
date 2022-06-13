@@ -1,4 +1,4 @@
-package bcsd.todo.utility.aspect;
+package bcsd.todo.utility;
 
 import bcsd.todo.utility.LogUtility;
 import org.aspectj.lang.ProceedingJoinPoint;

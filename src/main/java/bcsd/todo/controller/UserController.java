@@ -6,10 +6,12 @@ import bcsd.todo.domain.User;
 import bcsd.todo.enumerator.AuthenticationResult;
 import bcsd.todo.enumerator.AuthorizationResult;
 import bcsd.todo.service.user.impl.DefaultUserService;
+import bcsd.todo.utility.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
@@ -31,10 +33,12 @@ public class UserController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @Authorize
     public String getUserInfoPage(@PathVariable("id") String id, HttpSession session) {
+        session.setAttribute("targetUserId", id);
+
         switch ((AuthorizationResult) session.getAttribute("authorizationResult")) {
             case AUTHORIZED:
                 return "userInfo";
-            case INCORRECT_ID:
+            case GUEST:
                 return "userInfoOther";
             case NO_SUCH_USER:
                 return "error/noSuchUser";
@@ -53,9 +57,10 @@ public class UserController {
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
     @Authenticate
-    public String getUserInfoPage(@PathVariable("id") String id, @ModelAttribute User body, HttpSession session) {
+    public String getUserInfoPage(@PathVariable("id") String id, @ModelAttribute User body, HttpSession session, HttpServletResponse response) {
         switch ((AuthenticationResult) session.getAttribute("authenticationResult")) {
             case AUTHENTICATED:
+                TokenUtil.sendTokenViaCookie(id, response);
                 return "userInfo";
             case INCORRECT_PASSWORD:
                 return "error/418";

@@ -2,6 +2,6 @@ package bcsd.todo.enumerator;
 
 public enum AuthorizationResult {
     AUTHORIZED,
-    INCORRECT_ID,
+    GUEST,
     NO_SUCH_USER
 }

@@ -1,10 +1,11 @@
-package bcsd.todo.utility.aspect;
+package bcsd.todo.utility;
 
 import bcsd.todo.domain.User;
 import bcsd.todo.enumerator.AuthenticationResult;
 import bcsd.todo.enumerator.AuthorizationResult;
 import bcsd.todo.service.user.impl.DefaultUserService;
 import bcsd.todo.utility.AspectUtility;
+import bcsd.todo.utility.TokenUtil;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -12,7 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +30,8 @@ public class UserUtility {
     private DefaultUserService userService;
     @Autowired
     private HttpSession session;
+    @Autowired
+    private HttpServletRequest request;
 
     /**
      * 사용자 인증.
@@ -34,12 +40,12 @@ public class UserUtility {
      */
     @Before("@annotation(bcsd.todo.annotation.Authenticate)")
     public void authenticateUser(JoinPoint joinPoint) {
+        // TODO: 사용자 유효성 검사와 BCrypt 검사 분리 요망.
         Map<String, Object> args = AspectUtility.getArgumentMap(joinPoint);
 
         // 로그인을 시도하려는 사용자 조회.
         String id = (String) args.get("id");
         List<User> targetUsers = userService.getUserById(id);
-        User body = (User) args.get("body");
 
         // 사용자가 존재하지 않으면 관련 페이지 연결.
         if (targetUsers.size() == 0) {
@@ -59,6 +65,8 @@ public class UserUtility {
             session.setAttribute("authenticationResult", AuthenticationResult.NO_SUCH_USER);
             return;
         }
+
+        User body = (User) args.get("body");
 
         // 사용자 비밀번호가 일치하지 않으면 관련 페이지 연결.
         if (!BCrypt.checkpw(body.getPassword(), targetUser.getPassword())) {
@@ -80,6 +88,7 @@ public class UserUtility {
      */
     @Before("@annotation(bcsd.todo.annotation.Authorize)")
     public void authorizeUser(JoinPoint joinPoint) {
+        // TODO: 사용자 유효성 검사와 JWT 토큰 검사 분리 요망.
         Map<String, Object> args = AspectUtility.getArgumentMap(joinPoint);
 
         // 현재 세션에 등록된 사용자 조회.
@@ -108,10 +117,19 @@ public class UserUtility {
             return;
         }
 
-        // 사용자 아이디가 일치하지 않으면 관련 페이지 연결.
-        // TODO: JWT를 이용한 인가로 변경.
-        if (!id.equals(sessionUser.getId())) {
-            session.setAttribute("authorizationResult", AuthorizationResult.INCORRECT_ID);
+        // 세션에 로그인한 사용자가 없으면 게스트 권한 부여.
+        if (sessionUser == null) {
+            session.setAttribute("authorizationResult", AuthorizationResult.GUEST);
+            return;
+        }
+
+        // 위의 구문을 거쳤으면 사용자가 로그인한 상태임을 보장할 수 있으므로 별도의 예외처리가 필요하지 않음.
+        Cookie[] cookies = request.getCookies();
+        String token = Arrays.stream(cookies).filter(c -> c.getName().equals("token")).findFirst().get().getValue();
+
+        // 토큰이 유효하지 않거나 사용자 아이디가 일치하지 않으면 게스트 권한 부여.
+        if (!TokenUtil.verifyToken(token) || session.getAttribute("targetUserId").equals(sessionUser.getId())) {
+            session.setAttribute("authorizationResult", AuthorizationResult.GUEST);
             return;
         }
 

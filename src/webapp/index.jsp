@@ -8,7 +8,7 @@
   </head>
   <body>
     <%
-      pageContext.forward("WEB-INF/view/error/418.jsp");
+      response.sendRedirect("login");
     %>
   </body>
 </html>
