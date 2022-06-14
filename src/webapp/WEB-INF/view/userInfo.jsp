@@ -18,6 +18,10 @@
         <form name="logout" method="post" action="/user/logout">
             <input type="submit" value="로그아웃">
         </form>
+        <form name="leave" method="post" action="/user/leave">
+            <input type="submit" value="사용자 계정 삭제">
+            <input type="hidden" name="idUniq" value="<%= user.getIdUniq() %>">
+        </form>
         <hr>
         <footer>BCSD-ToDo</footer>
     </div>

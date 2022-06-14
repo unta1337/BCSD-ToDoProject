@@ -90,7 +90,7 @@ public class UserUtility {
         String token = Arrays.stream(cookies).filter(c -> c.getName().equals("token")).findFirst().get().getValue();
 
         // 토큰이 유효하지 않으면 false.
-        if (!TokenUtil.verifyToken(token)) {
+        if (!TokenUtility.verifyToken(token)) {
             return false;
         }
 

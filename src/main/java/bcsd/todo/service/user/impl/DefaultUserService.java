@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 /**
  * 기본 사용자 서비스 클래스.
@@ -21,6 +23,54 @@ public class DefaultUserService implements UserService {
      */
     @Autowired
     private UserRepository userRepository;
+    /**
+     * 현재 접속 중인 세션.
+     */
+    @Autowired
+    private HttpSession session;
+
+    /**
+     * 유효한 사용자 아이디의 정규 표현식.
+     * 20자 이내여야 함.
+     * 영문 대소문자와 숫자 및 '_'로 구성돼야 함.
+     * 첫 글자는 영문 대소문자여야 함.
+     */
+    private final String validIdPattern = "^[A-Za-z]\\w{0,19}$";
+    /**
+     * 유효한 사용자 비밀번호 정규 표현식.
+     * 기존의 비밀번호와 달라야 함. (이는 정규식에서 검사하지 않음)
+     * 8자리 이상이어야 함.
+     */
+    private final String validPasswordPattern = "^.{8,}$";
+
+    /**
+     * 사용자 아이디 유효성 검사.
+     *
+     * @param id 사용자 아이디
+     * @return 사용자 아이디 유효성 여부
+     */
+    public Boolean isValidId(String id) {
+        // 정규식에 부합하는지 검사.
+        return Pattern.matches(validIdPattern, id);
+    }
+
+    /**
+     * 사용자 비밀번호 유효성 검사.
+     *
+     * @param password 사용자 비밀번호
+     * @return 사용자 비밀번호 유효성 여부
+     */
+    public Boolean isValidPassword(String password) {
+        boolean validity = true;
+
+        User sessionUser = (User) session.getAttribute("sessionUser");
+        if (sessionUser != null) {
+            validity = BCrypt.checkpw(password, sessionUser.getPassword());
+        }
+
+        // 정규식에 부합하는지 검사.
+        return validity && Pattern.matches(validPasswordPattern, password);
+    }
 
     /**
      * 사용자 유효성 검사.
@@ -51,7 +101,11 @@ public class DefaultUserService implements UserService {
      */
     @Override
     public Boolean createUser(String id, String password) {
-        List<User> oldUser = getUsersById(id);
+        if (!isValidId(id) || !isValidPassword(password)) {
+            return false;
+        }
+
+        User oldUser = getUserById(id);
 
         // 동일한 아이디를 가진 기존 사용자가 있으면 계정 생성 실패.
         if (oldUser != null) {
@@ -150,6 +204,7 @@ public class DefaultUserService implements UserService {
     public Boolean deleteUserByIdUniq(Integer idUniq, Boolean hard) {
         if (hard)
             return userRepository.deleteUserByIdUniqHard(idUniq) > 0;
+        System.out.println(idUniq);
         return userRepository.deleteUserByIdUniq(idUniq) > 0;
     }
 

@@ -4,16 +4,13 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>로그인</title>
+        <title>회원가입</title>
     </head>
     <body>
         <div style="text-align: center">
-            <form name="login" method="post" onsubmit="this.action = '/user/' + this.id.value">
+            <form name="signUp" method="post" action="/user">
                 <label>아아디:&nbsp;<input type="text" name="id"></label>
                 <label>비밀번호:&nbsp;<input type="password" name="password"></label>
-                <input type="submit" name="submit" value="로그인">
-            </form>
-            <form name="signUp" method="post" action="/signUp">
                 <input type="submit" name="submit" value="회원가입">
             </form>
             <hr>

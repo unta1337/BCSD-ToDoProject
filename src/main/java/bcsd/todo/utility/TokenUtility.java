@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
  * JWT 토큰 유틸리티 클래스.
  */
 @Component
-public class TokenUtil {
+public class TokenUtility {
     /**
      * 내부적으로 사용하는 Signature 문자열.
      */

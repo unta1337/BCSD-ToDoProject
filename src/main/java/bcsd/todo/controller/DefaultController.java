@@ -6,14 +6,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-// TODO: 회원가입 구현 필요.
-// TODO: 회원탈퇴 구현 필요.
+// TODO: 필요한 곳에 주석 작성.
+
+// TODO: 회원탈퇴 구현 필요. (별도의 페이지를 작성하여 Soft, Hard 여부 확인)
 // TODO: 사용자 아이디 변경 구현 필요.
 // TODO: 사용자 비밀번호 변경 구현 필요.
 // TODO: 상기한 기능에 대한 컨트롤러(페이지) 구현 필요.
-
-// TODO: 사용자 아이디 유효성 검사 로직 필요.   (20자 이내 영문자와 숫자만 가능)
-// TODO: 사용자 비밀번호 유효성 검사 로직 필요. (기존 비밀번호와 달라야 하고 8자 이상)
 
 /**
  * 메인 페이지 컨트롤러.
@@ -34,5 +32,25 @@ public class DefaultController {
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String index() {
         return "login";
+    }
+
+    /**
+     * 회원가입 페이지로 연결.
+     *
+     * @return 회원가입 페이지
+     */
+    @RequestMapping(value = "/signUp", method = RequestMethod.GET)
+    public String signUp() {
+        return "signUp";
+    }
+
+    /**
+     * 회원가입 페이지로 연결.
+     *
+     * @return 회원가입 페이지
+     */
+    @RequestMapping(value = "/signUp", method = RequestMethod.POST)
+    public String signUpPost() {
+        return signUp();
     }
 }
