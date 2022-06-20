@@ -43,14 +43,4 @@ public class DefaultController {
     public String signUp() {
         return "signUp";
     }
-
-    /**
-     * 회원가입 페이지로 연결.
-     *
-     * @return 회원가입 페이지
-     */
-    @RequestMapping(value = "/signUp", method = RequestMethod.POST)
-    public String signUpPost() {
-        return signUp();
-    }
 }

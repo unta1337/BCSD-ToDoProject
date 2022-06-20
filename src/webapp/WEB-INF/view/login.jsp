@@ -13,9 +13,7 @@
                 <label>비밀번호:&nbsp;<input type="password" name="password"></label>
                 <input type="submit" name="submit" value="로그인">
             </form>
-            <form name="signUp" method="post" action="/signUp">
-                <input type="submit" name="submit" value="회원가입">
-            </form>
+            <a href="/signUp"><button>회원가입</button></a>
             <hr>
             <footer>BCSD-ToDo</footer>
         </div>
