@@ -1,12 +1,12 @@
-package bcsd.todo.utility;
+package bcsd.todo.utility.aop;
 
 import bcsd.todo.domain.User;
 import bcsd.todo.service.user.impl.DefaultUserService;
-import org.aspectj.lang.JoinPoint;
+import bcsd.todo.utility.AspectUtility;
+import bcsd.todo.utility.TokenUtility;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
@@ -20,8 +20,8 @@ import java.util.Map;
 /**
  * 사용자 서비스 제공 시 인증 및 인가를 위한 AOP 컴포넌트 클래스.
  */
-@Aspect
 @Component
+@Aspect
 public class UserUtility {
     /**
      * 사용자 서비스 객체.
@@ -42,41 +42,39 @@ public class UserUtility {
     /**
      * 사용자 인증.
      *
-     * @param joinPoint 사용자 서비스 메소드 정보
+     * @param proceedingJoinPoint 사용자 서비스 메소드 정보
      */
-    @Before("@annotation(bcsd.todo.annotation.Authenticate)")
-    public void authenticateUser(JoinPoint joinPoint) {
-        Map<String, Object> args = AspectUtility.getArgumentMap(joinPoint);
+    @Around("@annotation(bcsd.todo.annotation.Authenticate)")
+    public Object authenticateUser(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+        Map<String, Object> args = AspectUtility.getArgumentMap(proceedingJoinPoint);
 
         // 로그인을 시도하는 사용자 조회.
-        String id = (String) args.get("id");
+        User user = (User) args.get("user");
 
-        if (!userService.isValidUser(id))
-            return;
-        User requestUser = userService.getUsersById(id).stream().filter(user -> user.getValid()).findFirst().get();
-
-        User body = (User) args.get("body");
+        // 존재하지 않는 사용자면 false.
+        if (!userService.isValidUser(user.getId()))
+            return false;
+        User requestUser = userService.getUsersById(user.getId()).stream().filter(User::getValid).findFirst().get();
 
         // 사용자 비밀번호가 일치하지 않으면 false.
-        if (!BCrypt.checkpw(body.getPassword(), requestUser.getPassword())) {
-            session.setAttribute("authenticationResult", false);
-            return;
+        if (!BCrypt.checkpw(user.getPassword(), requestUser.getPassword())) {
+            return false;
         }
 
         // 현재 세션에 사용자 정보 등록.
         session.setAttribute("sessionUser", requestUser);
 
         // 정상 인증.
-        session.setAttribute("authenticationResult", true);
+        return proceedingJoinPoint.proceed();
     }
 
     /**
      * 사용자 인가.
      *
-     * @param proceedingJointPoint 사용자 서비스 메소드 정보
+     * @param proceedingJoinPoint 사용자 서비스 메소드 정보
      */
     @Around("@annotation(bcsd.todo.annotation.Authorize)")
-    public Object authorizeUser(ProceedingJoinPoint proceedingJointPoint) throws Throwable {
+    public Object authorizeUser(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         // 현재 세션에 등록된 사용자 조회.
         User sessionUser = (User) session.getAttribute("sessionUser");
 
@@ -95,6 +93,6 @@ public class UserUtility {
         }
 
         // 정상 인가.
-        return proceedingJointPoint.proceed();
+        return proceedingJoinPoint.proceed();
     }
 }

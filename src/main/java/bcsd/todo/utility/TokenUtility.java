@@ -4,7 +4,6 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import org.springframework.stereotype.Component;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -12,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * JWT 토큰 유틸리티 클래스.
  */
-@Component
 public class TokenUtility {
     /**
      * 내부적으로 사용하는 Signature 문자열.
@@ -37,7 +35,7 @@ public class TokenUtility {
      * 토큰 유효성 검사.
      *
      * @param token 토큰 문자열
-     * @return
+     * @return 토큰 유효성
      */
     public static Boolean verifyToken(String token) {
         try {

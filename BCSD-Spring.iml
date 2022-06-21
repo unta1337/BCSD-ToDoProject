@@ -17,11 +17,26 @@
         <fileset id="fileset" name="Dispatcher Servlet" removed="false">
           <file>file://$MODULE_DIR$/src/webapp/WEB-INF/dispatcher-servlet.xml</file>
           <file>file://$MODULE_DIR$/src/webapp/WEB-INF/applicationContext.xml</file>
-          <file>file://$MODULE_DIR$/out/artifacts/BCSD_Spring_war_exploded/WEB-INF/applicationContext.xml</file>
-          <file>file://$MODULE_DIR$/out/artifacts/BCSD_Spring_war_exploded/WEB-INF/dispatcher-servlet.xml</file>
-          <file>file://$MODULE_DIR$/out/artifacts/BCSD_Spring_war_exploded/WEB-INF/classes/mybatis/mybatis.xml</file>
           <file>file://$MODULE_DIR$/src/main/resources/mybatis/mybatis.xml</file>
         </fileset>
+        <fileset id="web application context" name="MVC application context" removed="true">
+          <file>file://$MODULE_DIR$/src/webapp/WEB-INF/applicationContext.xml</file>
+          <file>file://$MODULE_DIR$/out/artifacts/BCSD_Spring_war_exploded/WEB-INF/applicationContext.xml</file>
+          <file>file://$MODULE_DIR$/src/main/resources/mybatis/mybatis.xml</file>
+        </fileset>
+        <fileset id="web dispatcher servlet context" name="MVC dispatcher servlet context" removed="true">
+          <file>file://$MODULE_DIR$/src/webapp/WEB-INF/dispatcher-servlet.xml</file>
+        </fileset>
+      </configuration>
+    </facet>
+    <facet type="web" name="Web2">
+      <configuration>
+        <descriptors>
+          <deploymentDescriptor name="web.xml" url="file://$MODULE_DIR$/out/artifacts/BCSD_Spring_war_exploded/WEB-INF/web.xml" />
+        </descriptors>
+        <webroots>
+          <root url="file://$MODULE_DIR$/out/artifacts/BCSD_Spring_war_exploded" relative="/" />
+        </webroots>
       </configuration>
     </facet>
   </component>
@@ -45,6 +60,7 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-web:4.3.18.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.aspectj:aspectjrt:1.9.9.1" level="project" />
     <orderEntry type="library" name="Maven: org.aspectj:aspectjweaver:1.9.9.1" level="project" />
+    <orderEntry type="library" name="Maven: org.aspectj:aspectjtools:1.9.9.1" level="project" />
     <orderEntry type="library" name="Maven: org.mybatis:mybatis:3.2.2" level="project" />
     <orderEntry type="library" name="Maven: org.mybatis:mybatis-spring:1.2.0" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-jdbc:4.3.18.RELEASE" level="project" />

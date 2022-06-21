@@ -1,5 +1,6 @@
 package bcsd.todo.service.user.impl;
 
+import bcsd.todo.annotation.Authenticate;
 import bcsd.todo.annotation.Authorize;
 import bcsd.todo.domain.User;
 import bcsd.todo.repository.UserRepository;
@@ -44,52 +45,45 @@ public class DefaultUserService implements UserService {
     private final String validPasswordPattern = "^.{8,}$";
 
     /**
-     * 사용자 아이디 유효성 검사.
+     * 로그인.
      *
-     * @param id 사용자 아이디
-     * @return 사용자 아이디 유효성 여부
+     * @param user 로그인을 시도하려는 사용자 정보
+     * @return 로그인 성공 여부
      */
-    public Boolean isValidId(String id) {
-        // 정규식에 부합하는지 검사.
-        return Pattern.matches(validIdPattern, id);
+    @Authenticate
+    public Boolean signIn(User user) {
+        return true;
     }
 
     /**
-     * 사용자 비밀번호 유효성 검사.
+     * 로그아웃.
      *
-     * @param password 사용자 비밀번호
-     * @return 사용자 비밀번호 유효성 여부
+     * @return 로그아웃 성공 여부
      */
-    public Boolean isValidPassword(String password) {
-        boolean validity = true;
+    public Boolean signOut() {
+        session.invalidate();
 
-        User sessionUser = (User) session.getAttribute("sessionUser");
-        if (sessionUser != null) {
-            validity = BCrypt.checkpw(password, sessionUser.getPassword());
+        return true;
+    }
+
+    /**
+     * 사용자 정보 조회.
+     * 비밀번호 등 민감한 정보를 제외한 사용자 정보를 반환한다.
+     *
+     * @param id 조회할 사용자의 아이디
+     * @return 사용자 정보 또는 null
+     */
+    public User getUserInfo(String id) {
+        User user = getUserById(id);
+
+        if (user == null) {
+            return null;
         }
 
-        // 정규식에 부합하는지 검사.
-        return validity && Pattern.matches(validPasswordPattern, password);
-    }
+        user.setIdUniq(null);
+        user.setPassword(null);
 
-    /**
-     * 사용자 유효성 검사.
-     *
-     * @param id 사용자 아이디
-     * @return 사용자 유효성
-     */
-    public Boolean isValidUser(String id) {
-        return getUserById(id) != null;
-    }
-
-    /**
-     * 사용자 인가 Aspect의 메소드.
-     *
-     * @return 사용자 인가 여부
-     */
-    @Authorize
-    public Boolean getAuthorize() {
-        return true;
+        return user;
     }
 
     /**
@@ -112,6 +106,7 @@ public class DefaultUserService implements UserService {
             return false;
         }
 
+        // 비밀번호 암호화.
         String encryptedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
         Integer userCreationTry;
 
@@ -155,16 +150,15 @@ public class DefaultUserService implements UserService {
      * @return 사용자 정보 또는 null
      */
     public User getUserById(String id) {
+        // 사용자 목록 조회.
         List<User> users = getUsersById(id);
 
         if (users.size() == 0) {
             return null;
         }
 
-        Optional<User> optionalUser = users.stream().filter(User::getValid).findFirst();
-        if (optionalUser.isEmpty())
-            return null;
-        return optionalUser.get();
+        Optional<User> userOptional = users.stream().filter(User::getValid).findFirst();
+        return userOptional.orElse(null);
     }
 
     /**
@@ -202,10 +196,7 @@ public class DefaultUserService implements UserService {
     @Override
     @Authorize
     public Boolean deleteUserByIdUniq(Integer idUniq, Boolean hard) {
-        if (hard)
-            return userRepository.deleteUserByIdUniqHard(idUniq) > 0;
-        System.out.println(idUniq);
-        return userRepository.deleteUserByIdUniq(idUniq) > 0;
+        return hard ? userRepository.deleteUserByIdUniqHard(idUniq) > 0 : userRepository.deleteUserByIdUniq(idUniq) > 0;
     }
 
     /**
@@ -225,5 +216,64 @@ public class DefaultUserService implements UserService {
             return true;
 
         return userRepository.restoreUserByIdUniq(idUniq) > 0;
+    }
+
+    /**
+     * 사용자 인증 Aspect의 메소드.
+     *
+     * @return 사용자 인증 여부
+     */
+    @Authenticate
+    public Boolean getAuthenticate() {
+        return true;
+    }
+
+    /**
+     * 사용자 인가 Aspect의 메소드.
+     *
+     * @return 사용자 인가 여부
+     */
+    @Authorize
+    public Boolean getAuthorize() {
+        return true;
+    }
+
+    /**
+     * 사용자 유효성 검사.
+     *
+     * @param id 사용자 아이디
+     * @return 사용자 유효성
+     */
+    public Boolean isValidUser(String id) {
+        return getUserById(id) != null;
+    }
+
+    /**
+     * 사용자 아이디 유효성 검사.
+     *
+     * @param id 사용자 아이디
+     * @return 사용자 아이디 유효성 여부
+     */
+    public Boolean isValidId(String id) {
+        // 정규식에 부합하는지 검사.
+        return Pattern.matches(validIdPattern, id);
+    }
+
+    /**
+     * 사용자 비밀번호 유효성 검사.
+     *
+     * @param password 사용자 비밀번호
+     * @return 사용자 비밀번호 유효성 여부
+     */
+    public Boolean isValidPassword(String password) {
+        boolean validity = true;
+
+        User sessionUser = (User) session.getAttribute("sessionUser");
+        if (sessionUser != null) {
+            validity = BCrypt.checkpw(password, sessionUser.getPassword());
+        }
+
+        // 정규식에 부합하는지 검사.
+        return validity && Pattern.matches(validPasswordPattern, password);
     }
 }

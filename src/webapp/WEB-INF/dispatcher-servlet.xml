@@ -16,7 +16,9 @@
     <mvc:annotation-driven/>
     <context:component-scan base-package="bcsd.todo.utility"/>
     <context:component-scan base-package="bcsd.todo.controller"/>
-    <aop:aspectj-autoproxy/>
+    <context:component-scan base-package="bcsd.todo.service"/>
+    <context:component-scan base-package="bcsd.todo.repository"/>
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
 
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="prefix" value="/WEB-INF/view/"/>

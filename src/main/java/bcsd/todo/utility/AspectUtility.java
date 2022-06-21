@@ -11,10 +11,10 @@ import java.util.TreeMap;
  */
 public class AspectUtility {
     /**
-     * Before 또는 After 어노테이션의 JointPoint로부터 인수 추출.
+     * Before 또는 After 어노테이션의 JoinPoint로부터 인수 추출.
      *
      * @param joinPoint AOP 메소드 정보
-     * @return AOP 메소드의 JointPoint의 인수 목록
+     * @return AOP 메소드의 JoinPoint의 인수 목록
      */
     public static Map<String, Object> getArgumentMap(JoinPoint joinPoint) {
         Map<String, Object> args = new TreeMap<String, Object>();

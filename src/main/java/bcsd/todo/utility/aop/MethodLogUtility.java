@@ -1,5 +1,6 @@
-package bcsd.todo.utility;
+package bcsd.todo.utility.aop;
 
+import bcsd.todo.utility.LogUtility;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -19,16 +20,16 @@ public class MethodLogUtility {
     public void controller() { }
 
     /**
-     * 리포지토리 클래스 포인트 컷.
-     */
-    @Pointcut("execution(* bcsd.todo.repository..*(..))")
-    public void repository() { }
-
-    /**
      * 서비스 클래스 포인트 컷.
      */
     @Pointcut("execution(* bcsd.todo.service..*(..))")
     public void service() { }
+
+    /**
+     * 리포지토리 클래스 포인트 컷.
+     */
+    @Pointcut("execution(* bcsd.todo.repository..*(..))")
+    public void repository() { }
 
     /**
      * MVC 클래스 포인트 컷.

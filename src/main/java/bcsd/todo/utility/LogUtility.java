@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * 콘솔 로그 유틸리티 클래스.
+ * 콘솔 및 브라우저 관련 로그 유틸리티 클래스.
  */
 public class LogUtility {
     /**
